@@ -9,12 +9,32 @@ const App = () => {
   const [ctx, setCtx] = useState(new AudioContext());
 
   let typeOfSound = 'sine';
+  let delayTime = 0;
 
 
   //set params
   const setNoise = (e) => {
     typeOfSound = (e.target.value);
   }
+
+  const setDelay = (e) => {
+    delayTime = Number(e.target.value);
+  }
+
+  // //generateDistortion
+  // const generateDist = (amount) => {
+  //   var k = typeof amount === 'number' ? amount : 50,
+  //   n_samples = 44100,
+  //   curve = new Float32Array(n_samples),
+  //   deg = Math.PI / 180,
+  //   i = 0,
+  //   x;
+  //   for ( ; i < n_samples; i++) {
+  //     x = i * 2 / n_samples - 1;
+  //     curve[i] = ( 3 + k) * x * 20 * deg / ( Math.Pi + k * Math.abs(x) );
+  //   }
+  //   return curve;
+  // }
 
 
   //obj to hold all osc's currently running
@@ -41,16 +61,38 @@ const App = () => {
     const velGain = ctx.createGain();
     velGain.gain.value = velGainAmount;
 
-    osc.type = typeOfSound;
-    osc.frequency.value = midiFreq(note);
+    if (delayTime !== 0) {
+      //to generate and run additional channel to act as a dealy
+      const oscDelay = new DelayNode(ctx, {
+        delayTime: delayTime,
+        maxDelayTime: 15,
+      });
 
-    osc.connect(oscGain);
-    oscGain.connect(velGain);
-    velGain.connect(ctx.destination);
+      osc.type = typeOfSound;
+      osc.frequency.value = midiFreq(note);
 
-    osc.gain = oscGain;
-    oscs[note.toString()] = osc;
-    osc.start();
+      osc.connect(oscGain);
+      oscGain.connect(velGain);
+      velGain.connect(oscDelay);
+      oscDelay.connect(ctx.destination);
+      velGain.connect(ctx.destination);
+
+      osc.gain = oscGain;
+      oscs[note.toString()] = osc;
+      osc.start();
+    } else {
+      //to run without extra delay channel going to speakers
+      osc.type = typeOfSound;
+      osc.frequency.value = midiFreq(note);
+
+      osc.connect(oscGain);
+      oscGain.connect(velGain);
+      velGain.connect(ctx.destination);
+
+      osc.gain = oscGain;
+      oscs[note.toString()] = osc;
+      osc.start();
+    }
 
     //og setup
     // osc.connect(oscGain);
@@ -78,7 +120,7 @@ const App = () => {
 
 
   const updateDevices = (event) => {
-    console.log(event);
+    // console.log(event);
   }
 
   const handleInput = (input) => {
@@ -113,7 +155,7 @@ const App = () => {
     const inputs = midiAccess.inputs;
     // console.log(inputs);
     inputs.forEach((input) => {
-      console.log(input);
+      // console.log(input);
       // input.onmidimessage = handleInput;
       input.addEventListener('midimessage', handleInput);
     })
@@ -132,6 +174,13 @@ const App = () => {
     <button onClick={setNoise} value="square">Square</button>
     <button onClick={setNoise} value="sawtooth">Sawtooth</button>
     <button onClick={setNoise} value="triangle">Triangle</button>
+    <label htmlFor='delay'>Delay Time</label>
+    <select onChange={setDelay} name='delay' id='delay'>
+      <option value='0.0'>None</option>
+      <option value='0.3'>Fast</option>
+      <option value='0.5'>Medium</option>
+      <option value='0.7'>Slow</option>
+    </select>
     </>
   );
 }
