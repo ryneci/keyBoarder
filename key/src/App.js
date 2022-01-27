@@ -5,23 +5,21 @@ import axios from 'axios';
 import logo from './assets/keyBoarder.png';
 
 const App = () => {
-  //used to set Audio context or webkitAudio in case AudioContext isn't available
+  //used to set/create Audio context or webkitAudio in case AudioContext isn't available
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   //hooks
   const [ctx, setCtx] = useState(new AudioContext());
   const [presets, setPresets] = useState([]);
-  // const [tos, setTos] = useState('Sine');
-  // const [displayDelay, setDisplayDelay] = useState('None');
-  // const [displayDist, setDisplayDist] = useState('None');
-  // const [displayOver, setDisplayOver] = useState('None');
 
 
-  //values used to mutate sounds
+  //values used to manipulate sounds
   let typeOfSound = 'sine';
   let delayTime = 0;
   let distAmount = 0;
   let overSample = 'none'
+
+  // pointers to update sound params at bottom of page
   let setTos = document.getElementById('waveShape');
   let setDisplayDelay = document.getElementById('delayAmount');
   let setDisplayDist = document.getElementById('distAmount');
@@ -45,10 +43,11 @@ const App = () => {
   setTimeout(() => {
     canvas = document.getElementById('visualizer');
     canvas.width = 60 * window.innerWidth / 100;
-    canvas.height = 80 * window.innerHeight / 100;
+    canvas.height = 80 * window.innerHeight / 200;
     canvasCtx = canvas.getContext('2d');
   }, 500)
 
+  //function to help draw Oscilloscope in canvas element
   const draw = () => {
 
     requestAnimationFrame(draw);
@@ -69,26 +68,24 @@ const App = () => {
     for (var i = 0; i < bufferLength; i++) {
       let v = dataArray[i] / 128.0;
       let y = v * canvas.height / 2;
-
       if (i === 0) {
         canvasCtx.moveTo(x,y);
       } else {
         canvasCtx.lineTo(x,y);
       }
-
       x += sliceWidth;
     }
     canvasCtx.lineTo(canvas.width, canvas.height / 2);
     canvasCtx.stroke();
   }
-
+  //setTimeout to wait until canvas is loaded to start drawing
   setTimeout(() => {
     draw()
   }, 1000);
 
 
 
-  //to check what value is being swiched too
+  //to check what value is being swiched to
   const checkShape = (value) => {
     if (value  === 'sine') {
       setTos.innerText = 'Sine';
@@ -105,7 +102,6 @@ const App = () => {
   }
 
   const checkDelay = (value) => {
-    console.log('VALue bEING ECHEKC',value);
     if (value === '0.0' || value === '0') {
       setDisplayDelay.innerText = 'None';
     }
@@ -172,6 +168,7 @@ const App = () => {
   }
 
   //generateDistortion
+  // creates a curve to apply to distortion node inside audio routing
   const generateDist = (amount) => {
     var k = typeof amount === 'number' ? amount : 50,
     n_samples = 44100,
@@ -190,6 +187,7 @@ const App = () => {
   //obj to hold all osc's currently running
   const oscs = {};
 
+  //func to generate the audio context for the page
   const generateCtx = () => {
     let generated = new AudioContext();
     setCtx(generated);
@@ -232,12 +230,6 @@ const App = () => {
       osc.type = typeOfSound;
       osc.frequency.value = midiFreq(note);
 
-      // osc.connect(oscGain);
-      // oscGain.connect(velGain);
-      // velGain.connect(oscDelay);
-      // oscDelay.connect(ctx.destination);
-      // velGain.connect(ctx.destination);
-
       osc.connect(oscGain).connect(velGain).connect(dist).connect(ctx.destination);
       osc.connect(oscGain).connect(velGain).connect(oscDelay).connect(dist).connect(ctx.destination);
 
@@ -254,23 +246,12 @@ const App = () => {
       osc.type = typeOfSound;
       osc.frequency.value = midiFreq(note);
 
-      // osc.connect(oscGain);
-      // oscGain.connect(velGain);
-      // velGain.connect(dist);
-      // dist.connect(ctx.destination);
-
       osc.connect(oscGain).connect(velGain).connect(dist).connect(visual).connect(ctx.destination);
 
       osc.gain = oscGain;
       oscs[note.toString()] = osc;
       osc.start();
     }
-
-    //og setup
-    // osc.connect(oscGain);
-    // osc.connect(ctx.destination);
-    // osc.start();
-    // console.log(osc);
 
   }
 
@@ -292,13 +273,14 @@ const App = () => {
 
 
   const updateDevices = (event) => {
-    // console.log(event);
+    // keep it does stuff on events
   }
 
   const handleInput = (input) => {
     const command = input.data[0];
     const note = input.data[1];
     const velocity = input.data[2];
+    // re-enable to see midi data coming from keybaord
     // console.log(command, note, velocity);
     switch (command) {
       case 144:
@@ -321,14 +303,10 @@ const App = () => {
   }
 
   const success = (midiAccess) => {
-    // console.log(midiAccess);
     midiAccess.addEventListener('statechange', updateDevices);
 
     const inputs = midiAccess.inputs;
-    // console.log(inputs);
     inputs.forEach((input) => {
-      // console.log(input);
-      // input.onmidimessage = handleInput;
       input.addEventListener('midimessage', handleInput);
     })
   }
@@ -345,6 +323,7 @@ const App = () => {
     })
   };
 
+  //function to pull preset from database and apply parameters
   const setPreset = (e) => {
     const presetid = e.target.id;
     axios.get(`http://localhost:4544/api/preset/${presetid}`)
@@ -358,16 +337,18 @@ const App = () => {
       checkDist(toSet.dist);
       overSample = toSet.oversample;
       checkOver(toSet.oversample);
-      console.log(delayTime);
-      console.log(typeOfSound)
-      console.log(distAmount)
-      console.log(overSample)
+      //re-enable below to check agaisnt what program is displaying
+      // console.log(delayTime);
+      // console.log(typeOfSound)
+      // console.log(distAmount)
+      // console.log(overSample)
     })
     .catch((err) => {
       console.log(err);
     });
   };
 
+  //to save preset into database
   const savePreset = (e) => {
     e.preventDefault();
     const presetName = document.getElementById('presetName').value
@@ -392,7 +373,7 @@ const App = () => {
       console.log(err);
     })
   }
-
+  //used to fetch presets from databse on load
   useEffect(() => {
     getPreset();
   }, [])
