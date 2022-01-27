@@ -44,8 +44,8 @@ const App = () => {
   let canvasCtx;
   setTimeout(() => {
     canvas = document.getElementById('visualizer');
-    canvas.width = 80 * window.innerWidth / 100;
-    canvas.height = 100 * window.innerHeight / 100 || 766;
+    canvas.width = 60 * window.innerWidth / 100;
+    canvas.height = 80 * window.innerHeight / 100;
     canvasCtx = canvas.getContext('2d');
   }, 500)
 
@@ -403,7 +403,7 @@ const App = () => {
     <div className='container'>
       <div className='row text-center'>
         <div className='col-sm-12'>
-          <img style={{maxWidth: '150px', height: 'auto'}} src={logo} alt='keyBoarder Logo'></img>
+          <img style={{maxWidth: '250px', height: 'auto'}} src={logo} alt='keyBoarder Logo'></img>
           <hr></hr>
         </div>
       </div>
@@ -496,19 +496,19 @@ const App = () => {
             <div className='row'>
               <div className='col-md-3'>
                 <p>Wave Shape</p>
-                <p id='waveShape'>Sine</p>
+                <p id='waveShape' style={{color: '#198754', fontWeight: 'bold'}}>Sine</p>
               </div>
               <div className='col-md-3'>
                 <p>Delay Amount</p>
-                <p id='delayAmount'>None</p>
+                <p id='delayAmount' style={{color: '#198754', fontWeight: 'bold'}}>None</p>
               </div>
               <div className='col-md-3'>
                 <p>Distorion Amount</p>
-                <p id='distAmount'>None</p>
+                <p id='distAmount' style={{color: '#198754', fontWeight: 'bold'}}>None</p>
               </div>
               <div className='col-md-3'>
                 <p>Oversampling</p>
-                <p id='overSampleDisplay'>None</p>
+                <p id='overSampleDisplay' style={{color: '#198754', fontWeight: 'bold'}}>None</p>
               </div>
             </div>
             <div className='buffer'></div>

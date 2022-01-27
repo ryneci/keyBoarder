@@ -16,10 +16,10 @@ code {
   padding: 15px 0px 15px 0px;
 }
 
-#visualizer {
+/* #visualizer {
   height: 100%;
   width: 100%;
-};
+}; */
 
 .logo {
   max-width: 175px;
@@ -29,3 +29,4 @@ code {
 .setWidth {
   width: 125px;
 }
+
