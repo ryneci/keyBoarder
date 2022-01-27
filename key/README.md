@@ -2,7 +2,7 @@
 
 To start please make sure you have a midi capable device plugged into the computer. \
 Run the appropriate scripts either npm start and npm run key to work in development mode. \
-To run in production use npm run build and npm run key then navigate to localhost:4544
+To run in production use npm run build and npm run key then navigate to [http://localhost:4544](http://localhost:4544)
 
 ## Available Scripts
 
