@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.buffer {
+  padding: 15px 0px 15px 0px;
+}
+
+#visualizer {
+  height: 100%;
+  width: 100%;
+};
