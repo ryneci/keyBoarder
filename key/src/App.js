@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import List from './List.jsx';
 import './App.css';
 import axios from 'axios';
+import logo from './assets/keyBoarder.png';
 
 const App = () => {
   //used to set Audio context or webkitAudio in case AudioContext isn't available
@@ -398,27 +399,49 @@ const App = () => {
 
   return (
     <>
+    <div className='buffer'></div>
+    <div className='container'>
+      <div className='row text-center'>
+        <div className='col-sm-12'>
+          <img style={{maxWidth: '150px', height: 'auto'}} src={logo} alt='keyBoarder Logo'></img>
+          <hr></hr>
+        </div>
+      </div>
+    </div>
+    <div className='buffer'></div>
+    <div className='buffer'></div>
     <div className='container'>
       <div className='row'>
         {/* Start of Content Left Side */}
         <div className='col-md-8'>
           <div className='container'>
             <div className='row'>
-              <div className='col-lg-3'>
-                <button type='button' className='btn btn-outline-success' onClick={setNoise} value="sine">Sine</button>
+              <div className='col-sm-6'>
+                <div className='row'>
+                  <div className='col-sm-6'>
+                    <button style={{width: '100px'}} type='button' className='btn btn-outline-success' onClick={setNoise} value="sine">Sine</button>
+                    <div className='buffer'></div>
+                  </div>
+                  <div className='col-sm-6'>
+                    <button style={{width: '100px'}} type='button' className='btn btn-outline-success' onClick={setNoise} value="square">Square</button>
+                    <div className='buffer'></div>
+                  </div>
+                </div>
               </div>
-              <div className='col-lg-3'>
-                <button type='button' className='btn btn-outline-success' onClick={setNoise} value="square">Square</button>
-              </div>
-              <div className='col-lg-3'>
-                <button type='button' className='btn btn-outline-success' onClick={setNoise} value="sawtooth">Sawtooth</button>
-              </div>
-              <div className='col-lg-3'>
-                <button type='button' className='btn btn-outline-success' onClick={setNoise} value="triangle">Triangle</button>
+              <div className='col-sm-6'>
+                <div className='row'>
+                  <div className='col-sm-6'>
+                    <button style={{width: '100px'}} type='button' className='btn btn-outline-success' onClick={setNoise} value="sawtooth">Sawtooth</button>
+                    <div className='buffer'></div>
+                  </div>
+                  <div className='col-sm-6'>
+                    <button style={{width: '100px'}} type='button' className='btn btn-outline-success' onClick={setNoise} value="triangle">Triangle</button>
+                    <div className='buffer'></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div className='buffer'></div>
           <div className='container'>
             <div className='row'>
               <div className='col-lg-3'>
@@ -466,6 +489,7 @@ const App = () => {
             <div className='row'>
               <div className='col-sm-12'>
                 <h4>Current Settings</h4>
+                <hr></hr>
               </div>
             </div>
             <div className='buffer'></div>
@@ -500,6 +524,7 @@ const App = () => {
         <div className='col-md-4'>
           <form>
             <h4>Save Current Preset</h4>
+            <hr></hr>
             <label htmlFor='presetName'>Preset Name</label>
             <input type='text' id='presetName' className='form-control' maxLength='50'></input>
             <div className='form-text'>
